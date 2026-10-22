@@ -1,0 +1,35 @@
+# Los notebooks localizan la raíz del repositorio buscando este archivo.
+[project]
+name = "telco-zero-to-hero-workshop"
+version = "0.1.0"
+description = "Materiales ejecutables del workshop Databricks Zero to Hero para telecomunicaciones"
+requires-python = ">=3.11"
+dependencies = []
+
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.optional-dependencies]
+app = [
+  "streamlit>=1.42,<2",
+  "pandas>=2.1,<3",
+  "plotly>=5.24,<7",
+  "databricks-sdk>=0.40,<1",
+]
+
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
+
+[tool.ruff.lint.per-file-ignores]
+# `spark`, `dbutils` y `display` son globals inyectados por Databricks Runtime.
+"notebooks/*.py" = ["E402", "F821"]
+# Lakeflow inyecta `spark` en los archivos fuente del pipeline.
+"pipeline/**/*.py" = ["F821"]

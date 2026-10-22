@@ -1,0 +1,23 @@
+.DS_Store
+.databricks/
+.idea/
+.vscode/
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+node_modules/
+.env
+*.log
+dist/
+uv.lock
+
+# Material solo para el instructor: no se publica a los participantes
+instructor/
+
+# Caches y archivos locales de herramientas
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/
+.claude/
+*.zip
