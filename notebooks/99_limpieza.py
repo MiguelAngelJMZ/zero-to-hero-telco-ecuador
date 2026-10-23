@@ -3,7 +3,7 @@
 # MAGIC # 99 — Limpieza
 # MAGIC
 # MAGIC Elimina **solo sus assets**: App (y su código desplegado), Genie Space, dashboard de referencia, pipeline,
-# MAGIC job y su schema (con todas sus tablas y el volume). No toca el catálogo ni los
+# MAGIC jobs y su schema (con todas sus tablas y el volume). No toca el catálogo ni los
 # MAGIC objetos de otros participantes, ni el Git folder. También borra su configuración (`.z2h`).
 # MAGIC Escriba `BORRAR` en el widget para confirmar.
 
@@ -57,8 +57,9 @@ remove(f"Dashboard {cfg.dashboard_name}", dashboard_id, w.lakeview.trash)
 
 remove(f"Pipeline {cfg.pipeline_name}", workshop.find_pipeline_id(w, cfg.pipeline_name), w.pipelines.delete)
 
-job_id = next((job.job_id for job in w.jobs.list(name=cfg.job_name)), None)
-remove(f"Job {cfg.job_name}", job_id, w.jobs.delete)
+for job_name in (cfg.job_name, cfg.prepare_job_name):
+    job_id = next((job.job_id for job in w.jobs.list(name=job_name)), None)
+    remove(f"Job {job_name}", job_id, w.jobs.delete)
 
 spark.sql(f"DROP SCHEMA IF EXISTS `{catalog}`.`{schema}` CASCADE")
 results.append((f"Schema {cfg.namespace}", "eliminado"))

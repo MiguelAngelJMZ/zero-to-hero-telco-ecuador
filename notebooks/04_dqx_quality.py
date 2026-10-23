@@ -11,7 +11,7 @@
 
 # COMMAND ----------
 
-# MAGIC %pip install "databricks-labs-dqx>=0.9,<1" "pyyaml>=6,<7"
+# MAGIC %pip install --quiet databricks-labs-dqx~=0.9 pyyaml~=6.0
 
 # COMMAND ----------
 

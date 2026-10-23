@@ -79,6 +79,10 @@ class WorkshopConfig:
         return f"{PREFIX} - Calidad de red - {self.slug}"
 
     @property
+    def prepare_job_name(self) -> str:
+        return f"{PREFIX} - Preparar todo - {self.slug}"
+
+    @property
     def dashboard_name(self) -> str:
         return f"Experiencia móvil 360 (referencia) - {self.slug}"
 
@@ -240,6 +244,63 @@ def upsert_pipeline(w: WorkspaceClient, config: WorkshopConfig) -> str:
         w.pipelines.update(pipeline_id=pipeline_id, **spec)
         return pipeline_id
     return w.pipelines.create(**spec).pipeline_id
+
+
+# ---------------------------------------------------------------------------
+# Job orquestado del formato corto: datos → pipeline → DQX → Gold → Metric Views
+# ---------------------------------------------------------------------------
+
+
+def upsert_prepare_job(w: WorkspaceClient, config: WorkshopConfig, pipeline_id: str, seed: int = 42) -> int:
+    """Encadena en un solo job lo que los notebooks 02 a 06 hacen paso a paso."""
+
+    from databricks.sdk.service import jobs
+
+    notebooks = f"{config.repo_root}/notebooks"
+
+    def notebook_task(key: str, path: str, depends_on: str, parameters: dict | None = None) -> jobs.Task:
+        return jobs.Task(
+            task_key=key,
+            depends_on=[jobs.TaskDependency(task_key=depends_on)],
+            notebook_task=jobs.NotebookTask(
+                notebook_path=_api_path(path), source=jobs.Source.WORKSPACE, base_parameters=parameters or {}
+            ),
+        )
+
+    settings = dict(
+        name=config.prepare_job_name,
+        description="Formato de 80 minutos: prepara datos, pipeline, calidad, Gold y Metric Views en una corrida.",
+        tags={"workshop": "zero-2-hero", "participante": config.slug},
+        max_concurrent_runs=1,
+        tasks=[
+            jobs.Task(
+                task_key="datos_sinteticos",
+                description="Genera los once CSV en el volume (igual que 02_datos).",
+                notebook_task=jobs.NotebookTask(
+                    notebook_path=_api_path(f"{notebooks}/tareas/generar_datos"),
+                    source=jobs.Source.WORKSPACE,
+                    base_parameters={"catalog": config.catalog, "schema": config.schema, "seed": str(seed)},
+                ),
+            ),
+            jobs.Task(
+                task_key="pipeline_lakeflow",
+                description="Bronze → Silver → Gold preliminar. Full refresh: el job reescribe los CSV.",
+                depends_on=[jobs.TaskDependency(task_key="datos_sinteticos")],
+                pipeline_task=jobs.PipelineTask(pipeline_id=pipeline_id, full_refresh=True),
+            ),
+            notebook_task(
+                "calidad_dqx", f"{notebooks}/04_dqx_quality", "pipeline_lakeflow",
+                {"scope": "all", "min_downlink": "1.0"},
+            ),
+            notebook_task("vistas_gold", f"{notebooks}/05_sql_queries", "calidad_dqx"),
+            notebook_task("metric_views", f"{notebooks}/06_metric_views", "vistas_gold"),
+        ],
+    )
+    existing = next(iter(w.jobs.list(name=config.prepare_job_name)), None)
+    if existing:
+        w.jobs.reset(job_id=existing.job_id, new_settings=jobs.JobSettings(**settings))
+        return existing.job_id
+    return w.jobs.create(**settings).job_id
 
 
 # ---------------------------------------------------------------------------

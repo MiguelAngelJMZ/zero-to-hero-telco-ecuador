@@ -1,6 +1,6 @@
 # Workshop Databricks — de cero a héroe para telecomunicaciones
 
-Workshop de 180 minutos sobre calidad de red, clientes y productos de un operador
+Workshop de 80 minutos sobre calidad de red, clientes y productos de un operador
 móvil ficticio. Los datos son sintéticos y anónimos, con características geográficas
 y operativas plausibles para Ecuador. El operador ficticio se llama **Equinoccio Móvil**.
 
@@ -22,12 +22,19 @@ Job (PySpark) → 11 CSV en UC Volume → Lakeflow: 11 Bronze → 11 Silver
    Pegue la URL de este repositorio y pulse **Create Git folder**.
 2. Abra `notebooks/00_configuracion`, conecte compute **Serverless**, escriba su
    **catálogo** en el widget y ejecute todo el notebook.
-3. Ejecute los notebooks en orden. Cada uno muestra un enlace al asset que crea.
-4. Al final de cada módulo, resuelva su reto en [docs/RETOS.md](docs/RETOS.md).
+3. Abra `notebooks/00b_preparar_todo` y pulse **Run all**. Lanza un job que prepara
+   datos, pipeline, calidad, Gold y Metric Views (~15 min). Siga su avance con los enlaces.
+4. Cuando la verificación de `00b` esté en `OK`, continúe con `07_dashboard`,
+   `08_genie` y `09_app`.
+5. Retos del taller y para después: [docs/RETOS.md](docs/RETOS.md).
+
+Los notebooks `01` a `06` hacen lo mismo que `00b`, paso a paso. Úselos después del
+taller para estudiar cada módulo en detalle.
 
 | Notebook | Qué hace | Acción en la interfaz |
 |---|---|---|
 | `00_configuracion` | Valida permisos y servicios y guarda su configuración | — |
+| `00b_preparar_todo` | Ejecuta `01` a `06` como un solo job (formato del taller) | Seguir el job y el DAG |
 | `01_unity_catalog` | Crea su schema y el volume `raw_data` | Revisar Catalog Explorer |
 | `02_datos` | Crea su **job** de generación de datos y valida los CSV | **Run now** en el job |
 | `03_pipeline` | Crea su **pipeline** Lakeflow (no lo ejecuta) | **Run pipeline** y revisar el DAG |
@@ -49,7 +56,8 @@ A partir del usuario (`ana.perez@empresa.com` → `ana_perez`):
 | Asset | Nombre |
 |---|---|
 | Schema | `<catálogo>.z2h_ana_perez` (con volume `raw_data`) |
-| Job | `z2h - Preparar datos - ana_perez` |
+| Job del taller (`00b`) | `z2h - Preparar todo - ana_perez` |
+| Job paso a paso (`02`) | `z2h - Preparar datos - ana_perez` |
 | Pipeline | `z2h - Calidad de red - ana_perez` |
 | Dashboard de referencia | `Experiencia móvil 360 (referencia) - ana_perez` |
 | Genie Space | `Analista 360 de Red y Clientes - ana_perez` |

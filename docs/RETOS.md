@@ -1,21 +1,32 @@
 # Retos del workshop — Equinoccio Móvil
 
-Cada módulo termina con un reto corto. Los retos obligan a **modificar** lo que se
-construyó, no solo a ejecutarlo. Si un reto no termina en el tiempo indicado,
-continúe con el siguiente módulo: ningún reto bloquea a los siguientes.
+Los retos obligan a **modificar** lo que se construyó, no solo a ejecutarlo. Ningún
+reto bloquea a los siguientes: si uno no termina a tiempo, continúe.
 
 Las pistas están ordenadas de menos a más explícitas. Lea una a la vez.
 
+## Durante el taller
+
 | # | Módulo | Reto | Tiempo |
 |---:|---|---|---:|
-| 1 | Unity Catalog | Detective de gobierno | 3 min |
-| 2 | Lakeflow SDP | Endurecer una expectation | 5 min |
-| 3 | DQX | De advertencia a error | 4 min |
-| 4 | Metric Views | Una medida nueva | 6 min |
-| 5 | AI/BI Dashboard | Página "Ecuador por regiones" | 15 min |
-| 6 | Genie | Cazar y corregir una respuesta | 8 min |
-| 7 | Databricks App | Filtro de región natural | 6 min |
-| 8 | Final por equipos | ¿Dónde invertir este trimestre? | 15 min |
+| 5 | AI/BI Dashboard | Página "Ecuador por regiones" (pasos 1 y 3) | 10 min |
+| 6 | Genie | Cazar y corregir una respuesta | 7 min |
+
+## Para después del taller
+
+En el taller, los módulos 01 a 06 se ejecutan juntos con `00b_preparar_todo`. Estos
+retos le permiten recorrerlos uno por uno con calma. Abra el notebook del módulo,
+léalo y luego resuelva el reto.
+
+| # | Módulo | Notebook | Reto |
+|---:|---|---|---|
+| 1 | Unity Catalog | `01_unity_catalog` | Detective de gobierno |
+| 2 | Lakeflow SDP | `03_pipeline` | Endurecer una expectation |
+| 3 | DQX | `04_dqx_quality` | De advertencia a error |
+| 4 | Metric Views | `06_metric_views` | Una medida nueva |
+| 5 | AI/BI Dashboard | `07_dashboard` | Paso 2: mapa de sitios |
+| 7 | Databricks App | `09_app` | Filtro de región natural |
+| 8 | Caso de negocio | — | ¿Dónde invertir este trimestre? |
 
 ---
 
@@ -90,8 +101,11 @@ Duplique el dashboard de referencia (o use el suyo) y agregue una **página nuev
 
 1. Un KPI y una barra de `Cumplimiento SLA de red` por **Región natural**
    (Costa, Sierra, Amazonía, Insular).
-2. Un **mapa de sitios** con punto por sitio, coloreado por estado de salud.
+2. *(Después del taller)* Un **mapa de sitios** con punto por sitio, coloreado por
+   estado de salud.
 3. Un **filtro de Región natural** que actualice todos los widgets de la página.
+
+Durante el taller haga los pasos 1 y 3; el mapa queda para después.
 
 Puede construirlo a mano o pedírselo a Genie Code. Si usa Genie Code, **revise el SQL
 de cada dataset** antes de aceptarlo.
@@ -132,14 +146,14 @@ Copie el patrón de `_filter_region`. No todas las tablas Gold tienen
 `natural_region`: compruebe con `if "natural_region" in frame`.
 </details>
 
-## Reto 8 — Final por equipos: ¿dónde invertir este trimestre?
+## Reto 8 — Caso de negocio: ¿dónde invertir este trimestre?
 
 > Equinoccio Móvil tiene presupuesto para mejorar la red en **una sola provincia**
 > este trimestre. ¿Cuál elegirían y por qué?
 
 Reglas:
 
-- Equipos de 3–5 personas, 10 minutos de análisis y 1–2 minutos de presentación.
+- Individual o en equipo. Escriba su recomendación en media página.
 - La recomendación debe apoyarse en **un widget del dashboard** y **una respuesta de
   Genie con su SQL verificado**.
 - Consideren al menos tres ángulos: calidad de red (SLA), ingreso en riesgo y
