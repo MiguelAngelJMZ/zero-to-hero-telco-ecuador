@@ -22,7 +22,20 @@ dbutils.library.restartPython()
 # COMMAND ----------
 
 dbutils.widgets.text("confirmar", "", "Escriba BORRAR")
-assert dbutils.widgets.get("confirmar") == "BORRAR", "Escriba BORRAR en el widget 'confirmar' para continuar."
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## Confirmación
+# MAGIC La primera ejecución se detiene aquí a propósito. Escriba `BORRAR` en el widget
+# MAGIC **Escriba BORRAR** (arriba del notebook) y vuelva a ejecutar desde esta celda.
+
+# COMMAND ----------
+
+assert dbutils.widgets.get("confirmar") == "BORRAR", (
+    "Limpieza detenida: escriba BORRAR en el widget 'Escriba BORRAR' (arriba del notebook) "
+    "y vuelva a ejecutar desde esta celda. No se eliminó nada."
+)
 
 # COMMAND ----------
 
