@@ -53,15 +53,17 @@ $$
       expr: SUM(source.measurement_count)
     - name: Disponibilidad media
       expr: SUM(source.avg_availability_pct * source.measurement_count) / SUM(source.measurement_count)
-      comment: "Disponibilidad ponderada por cantidad de mediciones"
+      comment: "Porcentaje del tiempo en que la celda estuvo en servicio, ponderado por cantidad de mediciones"
     - name: Señal media
       expr: SUM(source.avg_signal_dbm * source.measurement_count) / SUM(source.measurement_count)
     - name: SINR medio
       expr: SUM(source.avg_sinr_db * source.measurement_count) / SUM(source.measurement_count)
     - name: Latencia media
       expr: SUM(source.avg_latency_ms * source.measurement_count) / SUM(source.measurement_count)
+      comment: "RTT promedio en ms: ida y vuelta de un paquete entre el dispositivo y un servidor de referencia. Sube con la congestión de la celda y con señal débil"
     - name: Downlink medio
       expr: SUM(source.avg_downlink_mbps * source.measurement_count) / SUM(source.measurement_count)
+      comment: "Velocidad de descarga promedio en Mbps"
     - name: Uplink medio
       expr: SUM(source.avg_uplink_mbps * source.measurement_count) / SUM(source.measurement_count)
     - name: Pérdida de paquetes media
@@ -76,9 +78,9 @@ $$
       expr: SUM(source.service_impact_alarms)
     - name: Suscripciones impactadas promedio
       expr: AVG(source.impacted_subscriptions_day)
-    - name: Cumplimiento SLA de red
+    - name: Cumplimiento de calidad de red
       expr: SUM(source.network_sla_compliance_pct * source.measurement_count) / SUM(source.measurement_count)
-      comment: "Porcentaje ponderado con disponibilidad >= 99%, latencia <= 80 ms y downlink >= 20 Mbps"
+      comment: "Porcentaje de mediciones que cumplen a la vez disponibilidad >= 99 %, latencia <= 80 ms y downlink >= 20 Mbps. Mide calidad de servicio, no tiempo de reparación"
 $$;
 
 -- COMMAND ----------
@@ -154,8 +156,9 @@ $$
       expr: 100.0 * (SUM(source.nps_promoters) - SUM(source.nps_detractors)) / NULLIF(SUM(source.survey_responses), 0)
     - name: Clientes de alto riesgo
       expr: COUNT(DISTINCT CASE WHEN customer_risk.churn_risk_band = 'Alto' THEN source.customer_id END)
-    - name: Cumplimiento SLA de cliente
+    - name: Cumplimiento de calidad del cliente
       expr: AVG(source.network_sla_compliance_pct)
+      comment: "Cumplimiento de calidad de red promedio de las celdas que usaron las líneas del cliente o producto"
 $$;
 
 -- COMMAND ----------
@@ -167,10 +170,10 @@ SELECT
   MEASURE(`Disponibilidad media`) AS disponibilidad_pct,
   MEASURE(`Latencia media`) AS latencia_ms,
   MEASURE(`Downlink medio`) AS downlink_mbps,
-  MEASURE(`Cumplimiento SLA de red`) AS sla_pct
+  MEASURE(`Cumplimiento de calidad de red`) AS calidad_red_pct
 FROM mv_network_quality
 GROUP BY `Provincia`, `Tecnología`
-ORDER BY sla_pct;
+ORDER BY calidad_red_pct;
 
 -- COMMAND ----------
 
@@ -181,7 +184,7 @@ SELECT
   MEASURE(`ARPU`) AS arpu_usd,
   MEASURE(`Tickets por 100 líneas`) AS tickets_por_100_lineas,
   MEASURE(`NPS`) AS nps,
-  MEASURE(`Cumplimiento SLA de cliente`) AS sla_red_pct
+  MEASURE(`Cumplimiento de calidad del cliente`) AS calidad_cliente_pct
 FROM mv_customer_product_experience
 GROUP BY `Producto`
 ORDER BY arpu_usd DESC;

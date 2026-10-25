@@ -91,7 +91,7 @@ Operaciones quiere saber **qué porcentaje de las horas** está en estado `Crít
 3. En una celda nueva, consulte la medida por `Región natural`.
 
 **Pregunte:** ¿qué región natural tiene el mayor porcentaje? ¿Coincide con la que
-tiene el peor `Cumplimiento SLA de red`?
+tiene el peor `Cumplimiento de calidad de red`?
 
 <details><summary>Pista 1</summary>
 
@@ -111,10 +111,10 @@ Las medidas se consultan con `MEASURE()`:
 
 Duplique el dashboard de referencia (o use el suyo) y agregue una **página nueva** con:
 
-1. Un **KPI** con el `Cumplimiento SLA de red` global y una **barra** con el
-   `Cumplimiento SLA de red` por **Región natural** (Costa, Sierra, Amazonía, Insular).
+1. Un **KPI** con el `Cumplimiento de calidad de red` global y una **barra** con el
+   `Cumplimiento de calidad de red` por **Región natural** (Costa, Sierra, Amazonía, Insular).
 2. *(Después del taller)* Un **mapa de sitios** con un punto por sitio, coloreado por
-   nivel de SLA.
+   nivel de calidad de red.
 3. Un **filtro de Región natural** que actualice todos los widgets de la página.
 
 Durante el taller haga los pasos 1 y 3; el mapa queda para después.
@@ -122,15 +122,15 @@ Durante el taller haga los pasos 1 y 3; el mapa queda para después.
 Puede construirlo a mano o pedírselo a Genie Code. Si usa Genie Code, **revise el SQL
 de cada dataset** antes de aceptarlo.
 
-**Pregunte:** ¿qué región natural tiene el peor SLA? Y, cuando haga el mapa, ¿qué
+**Pregunte:** ¿qué región natural tiene la peor calidad de red? Y, cuando haga el mapa, ¿qué
 conversación abre Galápagos sobre conectividad insular?
 
 <details><summary>Pista 1 (barra y KPI)</summary>
 
 `Región natural` es una dimensión de `mv_network_quality`. En la pestaña **Data**, cree
 un dataset con SQL que agrupe por esa dimensión y use
-``MEASURE(`Cumplimiento SLA de red`)``. En la barra, ponga la región natural en el eje X
-y el SLA en el eje Y.
+``MEASURE(`Cumplimiento de calidad de red`)``. En la barra, ponga la región natural en el eje X
+y la calidad de red en el eje Y.
 </details>
 <details><summary>Pista 2 (filtro)</summary>
 
@@ -148,13 +148,13 @@ Las coordenadas (`latitude`, `longitude`) están en `network_sites_silver`. Úna
 La latitud y la longitud no se escriben: son columnas del dataset. Cree un dataset con
 una fila por sitio, elija la visualización **Point map** y asigne `latitude` y
 `longitude` a los campos del mismo nombre. Para el color, calcule en la consulta una
-banda con `CASE WHEN` sobre el SLA promedio del sitio (por ejemplo, < 55 %, 55–65 % y
+banda con `CASE WHEN` sobre la calidad de red promedio del sitio (por ejemplo, < 55 %, 55–65 % y
 > 65 %): `site_health_status` es diario y un sitio tiene varios estados en el período.
 </details>
 
 ## Reto 6 — Cazar y corregir una respuesta (Genie)
 
-1. Pregunte en modo Chat: *¿Qué provincia de la Costa tiene peor SLA de red en 4G?*
+1. Pregunte en modo Chat: *¿Qué provincia de la Costa tiene peor calidad de red en 4G?*
 2. Pulse **Show code**. ¿Filtró por `Región natural = 'Costa'` o por otra cosa?
 3. Pregunte: *¿Cuánto ingreso está en riesgo en Pichincha por incidentes críticos?*
 4. Si alguna respuesta usa una columna equivocada o no entiende un término, agregue
@@ -190,7 +190,7 @@ Reglas:
 - Individual o en equipo. Escriba su recomendación en media página.
 - La recomendación debe apoyarse en **un widget del dashboard** y **una respuesta de
   Genie con su SQL verificado**.
-- Consideren al menos tres ángulos: calidad de red (SLA), ingreso en riesgo y
+- Consideren al menos tres ángulos: calidad de red, ingreso en riesgo y
   clientes con alto riesgo de baja.
 - No hay una única respuesta correcta: se evalúa la evidencia, no la provincia.
 

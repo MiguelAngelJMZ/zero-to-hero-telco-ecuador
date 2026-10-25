@@ -39,13 +39,18 @@ METRIC_VIEWS = {
     "mv_network_quality": {
         "description": (
             "KPIs certificados de calidad de red por hora, sitio y tecnología. Fuente principal para "
-            "disponibilidad, latencia, velocidad y cumplimiento del SLA de red. Consultar las medidas con MEASURE()."
+            "disponibilidad, latencia, velocidad y cumplimiento de calidad de red. Consultar las medidas con MEASURE()."
         ),
         "columns": [
-            _column("Cumplimiento SLA de red", ["SLA de red", "SLA", "cumplimiento"]),
+            _column(
+                "Cumplimiento de calidad de red",
+                ["calidad de red", "SLA de red", "SLA", "cumplimiento"],
+                "Porcentaje de mediciones con disponibilidad >= 99 %, latencia <= 80 ms y downlink >= 20 Mbps a la vez. "
+                "No mide tiempo de reparación.",
+            ),
             _column("Disponibilidad media", ["disponibilidad", "uptime"]),
             _column("Downlink medio", ["velocidad", "bajada", "throughput", "velocidad de descarga"]),
-            _column("Latencia media", ["latencia", "retardo"]),
+            _column("Latencia media", ["latencia", "retardo", "RTT"], "RTT promedio en ms entre el dispositivo y un servidor de referencia."),
             _column("Provincia", ["provincia", "región administrativa"]),
         ],
     },
@@ -57,10 +62,10 @@ METRIC_VIEWS = {
         "columns": [
             _column("Clientes de alto riesgo", ["clientes en riesgo", "riesgo de churn"]),
             _column(
-                "Cumplimiento SLA de cliente",
-                ["SLA del cliente", "SLA por producto", "SLA de red por producto"],
-                "SLA de red que experimentan las líneas del cliente o producto. El SLA global de la red está "
-                "en mv_network_quality.",
+                "Cumplimiento de calidad del cliente",
+                ["calidad del cliente", "calidad por producto", "SLA del cliente", "SLA por producto"],
+                "Calidad de red que experimentan las líneas del cliente o producto. La calidad global de la red "
+                "está en mv_network_quality.",
             ),
             _column("Ingreso facturado", ["ingreso", "ingresos", "facturación", "revenue"]),
             _column("Ingreso por recargas", ["recargas"]),
@@ -100,6 +105,12 @@ GOLD_TABLES = {
             "para KPIs de red agregados preferir mv_network_quality."
         ),
         "columns": [
+            _column(
+                "network_sla_compliance_pct",
+                ["calidad de red", "SLA de red"],
+                "Cumplimiento de calidad de red del sitio en el día: % de mediciones con disponibilidad >= 99 %, "
+                "latencia <= 80 ms y downlink >= 20 Mbps.",
+            ),
             _column("region", ["provincia"], "Provincia del sitio."),
             _column("site_health_status", ["estado del sitio", "salud del sitio"], "Estado diario: Saludable, Atención o Crítico."),
         ],
@@ -117,7 +128,7 @@ def text_instructions(extra_disambiguation: list[str] | None = None) -> str:
     disambiguation = [
         "Los datos son de agosto de 2026. 'Últimos días', 'esta semana' o 'recientemente' se refieren a "
         "ese período, nunca a la fecha actual.",
-        "Si piden 'el mejor' o 'el peor' sin indicar la métrica, pregunta: '¿Quieres ordenar por SLA de red, "
+        "Si piden 'el mejor' o 'el peor' sin indicar la métrica, pregunta: '¿Quieres ordenar por calidad de red, "
         "disponibilidad, latencia o ingreso?'",
         *(extra_disambiguation or []),
     ]
@@ -159,7 +170,7 @@ def build_serialized_space(
         {
             "id": _id(1),
             "question": [
-                "Compara disponibilidad, latencia, throughput y SLA por provincia y tecnología. "
+                "Compara disponibilidad, latencia, throughput y calidad de red por provincia y tecnología. "
                 "Muestra las tres combinaciones con peor desempeño."
             ],
         },
@@ -167,7 +178,7 @@ def build_serialized_space(
             "id": _id(2),
             "question": [
                 "¿Qué cinco productos tienen mayor ARPU y cómo se comparan en consumo, "
-                "tickets por 100 líneas, NPS y SLA de red?"
+                "tickets por 100 líneas, NPS y calidad de red?"
             ],
         },
     ]
@@ -176,11 +187,11 @@ def build_serialized_space(
     examples = [
         {
             "id": _id(10),
-            "question": ["¿Cuál es el SLA de red por región natural?"],
+            "question": ["¿Cuál es la calidad de red por región natural?"],
             "sql": [
-                "SELECT `Región natural`, ROUND(MEASURE(`Cumplimiento SLA de red`), 1) AS sla_red_pct\n"
+                "SELECT `Región natural`, ROUND(MEASURE(`Cumplimiento de calidad de red`), 1) AS calidad_red_pct\n"
                 f"FROM {network_metric}\n"
-                "GROUP BY ALL\nORDER BY sla_red_pct"
+                "GROUP BY ALL\nORDER BY calidad_red_pct"
             ],
             "usage_guidance": ["Patrón para KPIs de red: dimensiones de mv_network_quality y medidas con MEASURE()."],
         },
@@ -208,10 +219,10 @@ def build_serialized_space(
         },
         {
             "id": _id(13),
-            "question": ["¿Qué sitios combinan SLA bajo y tickets abiertos?"],
+            "question": ["¿Qué sitios combinan baja calidad de red y tickets abiertos?"],
             "sql": [
                 "SELECT event_date, site_id, region AS provincia, canton, "
-                "ROUND(network_sla_compliance_pct, 1) AS sla_red_pct, open_tickets, site_health_status\n"
+                "ROUND(network_sla_compliance_pct, 1) AS calidad_red_pct, open_tickets, site_health_status\n"
                 f"FROM {namespace}.gold_site_daily_360\n"
                 "WHERE network_sla_compliance_pct < 55 AND open_tickets > 0\n"
                 "ORDER BY network_sla_compliance_pct, open_tickets DESC"
@@ -230,10 +241,10 @@ def build_serialized_space(
                 "content": [
                     "SELECT `Provincia`, `Tecnología`, ROUND(MEASURE(`Disponibilidad media`), 1) AS disponibilidad_pct, "
                     "ROUND(MEASURE(`Latencia media`), 1) AS latencia_ms, ROUND(MEASURE(`Downlink medio`), 1) AS downlink_mbps, "
-                    "ROUND(MEASURE(`Cumplimiento SLA de red`), 1) AS sla_red_pct\n"
+                    "ROUND(MEASURE(`Cumplimiento de calidad de red`), 1) AS calidad_red_pct\n"
                     f"FROM {network_metric}\n"
                     "WHERE `Provincia` IS NOT NULL\n"
-                    "GROUP BY ALL\nORDER BY sla_red_pct\nLIMIT 3"
+                    "GROUP BY ALL\nORDER BY calidad_red_pct\nLIMIT 3"
                 ],
             }],
         },
@@ -245,7 +256,7 @@ def build_serialized_space(
                 "content": [
                     "SELECT `Producto`, ROUND(MEASURE(`ARPU`), 2) AS arpu_usd, ROUND(MEASURE(`Consumo de datos`), 1) AS consumo_gb, "
                     "ROUND(MEASURE(`Tickets por 100 líneas`), 1) AS tickets_100_lineas, ROUND(MEASURE(`NPS`), 1) AS nps, "
-                    "ROUND(MEASURE(`Cumplimiento SLA de cliente`), 1) AS sla_cliente_pct\n"
+                    "ROUND(MEASURE(`Cumplimiento de calidad del cliente`), 1) AS calidad_cliente_pct\n"
                     f"FROM {customer_metric}\n"
                     "WHERE `Producto` IS NOT NULL\n"
                     "GROUP BY ALL\nORDER BY arpu_usd DESC\nLIMIT 5"

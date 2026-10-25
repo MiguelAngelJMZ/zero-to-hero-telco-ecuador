@@ -16,6 +16,66 @@ Job (PySpark) → 11 CSV en UC Volume → Lakeflow: 11 Bronze → 11 Silver
               → AI/BI Dashboard + Genie Space + Databricks App
 ```
 
+## Los datos
+
+Equinoccio Móvil es un operador móvil ecuatoriano ficticio. El workshop responde una
+pregunta de negocio: **¿cómo se relaciona la calidad de la red con la experiencia y el
+valor de los clientes?** Si una celda se degrada en Guayaquil, ¿cuántos clientes se
+afectan, cuánto ingreso está en riesgo y quién podría darse de baja?
+
+Los datos son sintéticos, sin PII, y corresponden a **agosto de 2026**: 7 días de
+telemetría de red (1–7) y 14 días de consumo (1–14). Cubren 12 cantones de 9
+provincias en las 4 regiones naturales (Costa, Sierra, Amazonía e Insular). Los
+montos están en USD.
+
+### Las 11 fuentes
+
+| Dominio | Fuente | Qué representa | Filas |
+|---|---|---|---:|
+| Red | `network_sites` | Sitios (torres) con provincia, cantón, región natural y coordenadas | 60 |
+| | `radio_cells` | Celdas 4G y 5G de cada sitio, con banda y capacidad | 180 |
+| | `cell_tower_metrics` | Mediciones por celda: disponibilidad, señal, latencia y velocidad | 30.240 |
+| Operación | `network_alarms` | Alarmas de red con severidad e impacto en el servicio | 1.200 |
+| | `maintenance_orders` | Órdenes de trabajo con prioridad, costo y tiempo objetivo | 400 |
+| Clientes | `products` | Planes prepago, pospago y empresa (USD 5–89,99 al mes) | 18 |
+| | `customers` | Clientes seudónimos con segmento y provincia | 3.000 |
+| | `subscriptions` | Líneas contratadas por cada cliente | 4.200 |
+| | `usage_daily` | Consumo diario por línea: datos, voz, facturación y recargas | 58.800 |
+| Experiencia | `support_tickets` | Reclamos de cobertura, velocidad, facturación y otros | 1.500 |
+| | `customer_surveys` | Encuestas NPS y CSAT | 800 |
+
+Los datos incluyen **impurezas intencionales** que el pipeline y DQX deben detectar:
+tarifas negativas, sitios inexistentes, duplicados y porcentajes fuera de rango.
+
+### De las fuentes a las métricas
+
+| Capa | Objetos | Para qué |
+|---|---|---|
+| Bronze | 11 tablas | Copia fiel de los CSV, con trazabilidad del archivo de origen |
+| Silver | 11 tablas | Datos limpios, deduplicados y enriquecidos (celda → sitio → provincia) |
+| Calidad (DQX) | 6 `validated` + 6 `quarantine` | Registros confiables separados de los que requieren corrección |
+| Gold | `gold_network_hourly` | Red por hora, sitio y tecnología |
+| | `gold_site_daily_360` | Sitio por día: red, alarmas, tickets y mantenimiento |
+| | `gold_customer_product_daily` | Línea por día: consumo, facturación, atención y experiencia de red |
+| | `gold_customer_360` | Cliente: valor, experiencia y riesgo de baja |
+| | `gold_incident_impact` | Alarma: clientes y líneas impactadas e ingreso en riesgo |
+| Metric Views | `mv_network_quality` | KPIs de red, definidos una sola vez |
+| | `mv_customer_product_experience` | KPIs de clientes, productos e ingresos |
+
+### Definiciones clave
+
+| Métrica | Definición |
+|---|---|
+| **Cumplimiento de calidad de red** | % de mediciones que cumplen **a la vez** disponibilidad ≥ 99 %, latencia ≤ 80 ms y downlink ≥ 20 Mbps. Mide calidad de servicio, **no** tiempo de reparación. |
+| **Latencia** | RTT en ms: ida y vuelta de un paquete entre el dispositivo y un servidor de referencia. Sube con la congestión de la celda y con señal débil. |
+| **Disponibilidad** | % del tiempo en que la celda estuvo en servicio. |
+| **Downlink** | Velocidad de descarga en Mbps. |
+| **Estado de salud del sitio** | Diario: `Crítico` si la calidad de red es < 55 %; `Atención` si es < 65 % o hay tickets críticos o más de 2 abiertos; `Saludable` en el resto. |
+| **Riesgo de baja** | Banda Alto, Medio o Bajo por cliente, que combina la calidad de red experimentada, los tickets de red y el NPS. |
+| **ARPU** | Ingreso facturado del período dividido por clientes únicos. |
+| **Ingreso en riesgo** | Ingreso facturado de las líneas afectadas por un incidente. |
+| **Tiempo objetivo (SLA de atención)** | Horas para resolver tickets (4–72 h según severidad) y órdenes de mantenimiento (2–72 h según prioridad). |
+
 ## Inicio rápido (participantes)
 
 1. En **Workspace**, abra su carpeta de usuario y pulse **Create → Git folder**.

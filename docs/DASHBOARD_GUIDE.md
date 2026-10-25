@@ -40,7 +40,7 @@ SELECT
   MEASURE(`Disponibilidad media`) AS availability_pct,
   MEASURE(`Latencia media`) AS latency_ms,
   MEASURE(`Downlink medio`) AS downlink_mbps,
-  MEASURE(`Cumplimiento SLA de red`) AS network_sla_pct
+  MEASURE(`Cumplimiento de calidad de red`) AS network_sla_pct
 FROM <catalog>.<schema>.mv_network_quality
 GROUP BY `Provincia`, `Tecnología`
 ```
@@ -57,7 +57,7 @@ SELECT
   MEASURE(`Tickets por 100 líneas`) AS tickets_per_100_lines,
   MEASURE(`NPS`) AS nps,
   MEASURE(`Clientes de alto riesgo`) AS high_risk_customers,
-  MEASURE(`Cumplimiento SLA de cliente`) AS customer_network_sla_pct
+  MEASURE(`Cumplimiento de calidad del cliente`) AS customer_network_sla_pct
 FROM <catalog>.<schema>.mv_customer_product_experience
 GROUP BY `Provincia`, `Segmento`, `Producto`
 ```
@@ -102,7 +102,7 @@ nombre del entorno de validación en capturas o documentación compartida.
 1. KPI: disponibilidad media.
 2. KPI: latencia media.
 3. KPI: clientes activos.
-4. Barras: SLA de red por provincia, color por tecnología.
+4. Barras: cumplimiento de calidad de red por provincia, color por tecnología.
 5. Dispersión: ARPU frente a NPS, tamaño por clientes activos y color por segmento.
 6. Tabla: sitios, estado, latencia, tickets y suscripciones impactadas.
 7. Filtros: provincia, tecnología y segmento.

@@ -149,7 +149,7 @@ SELECT
   coalesce(m.p1_orders, 0) AS p1_orders,
   coalesce(m.downtime_minutes, 0) AS downtime_minutes,
   coalesce(m.maintenance_cost_usd, 0) AS maintenance_cost_usd,
-  -- Umbrales calibrados a los datos sintéticos (SLA diario entre ~40 % y ~75 %).
+  -- Umbrales calibrados a los datos sintéticos (calidad de red diaria entre ~40 % y ~75 %).
   CASE
     WHEN n.network_sla_compliance_pct < 55 THEN 'Crítico'
     WHEN n.network_sla_compliance_pct < 65

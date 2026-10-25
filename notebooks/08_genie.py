@@ -13,7 +13,7 @@
 # MAGIC | Qué necesita saber Genie | Dónde se define en este espacio |
 # MAGIC |---|---|
 # MAGIC | Para qué sirve cada tabla o Metric View | Descripción de la fuente |
-# MAGIC | Cómo llama el negocio a cada columna ("SLA", "provincia", "churn") | Sinónimos por columna |
+# MAGIC | Cómo llama el negocio a cada columna ("calidad de red", "provincia", "churn") | Sinónimos por columna |
 # MAGIC | Cómo se calcula un KPI | Medidas de las Metric Views (módulo 06) |
 # MAGIC | Cómo se escribe una consulta típica | SQL de ejemplo |
 # MAGIC | Cómo comportarse: período, ambigüedades, privacidad, formato | Instrucciones de texto (breves) |
@@ -84,11 +84,11 @@ show_link("Abrir el Genie Space", genie_url)
 # MAGIC ## 3. Probar en modo Chat
 # MAGIC En el Genie Space, haga estas dos preguntas y pulse **Show code** para revisar el SQL:
 # MAGIC
-# MAGIC 1. *Compara disponibilidad, latencia, throughput y cumplimiento del SLA por provincia y
+# MAGIC 1. *Compara disponibilidad, latencia, throughput y cumplimiento de calidad de red por provincia y
 # MAGIC    tecnología durante los siete días de telemetría. Muéstrame las tres combinaciones
 # MAGIC    con peor desempeño.*
 # MAGIC 2. *¿Qué cinco productos tienen mayor ARPU y cómo se comparan en consumo de datos,
-# MAGIC    tickets por cada 100 líneas activas, NPS y cumplimiento del SLA de red?*
+# MAGIC    tickets por cada 100 líneas activas, NPS y cumplimiento de calidad de red?*
 # MAGIC
 # MAGIC Una respuesta fluida no exime de verificar el SQL. En **Benchmarks** puede ejecutar
 # MAGIC ambas preguntas y comparar con el SQL verificado. Si el modo **Deep Research** está

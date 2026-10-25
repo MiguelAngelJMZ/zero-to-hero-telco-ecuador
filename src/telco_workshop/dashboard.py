@@ -99,7 +99,7 @@ def build_serialized_dashboard(catalog: str, schema: str) -> dict[str, Any]:
   MEASURE(`Disponibilidad media`) / 100 AS availability_pct,
   MEASURE(`Latencia media`) AS latency_ms,
   MEASURE(`Downlink medio`) AS downlink_mbps,
-  MEASURE(`Cumplimiento SLA de red`) / 100 AS network_sla_pct
+  MEASURE(`Cumplimiento de calidad de red`) / 100 AS network_sla_pct
 FROM mv_network_quality
 GROUP BY ALL""",
         ),
@@ -168,13 +168,13 @@ FROM gold_incident_impact""",
                 "y": {
                     "fieldName": "avg(network_sla_pct)",
                     "scale": {"type": "quantitative"},
-                    "displayName": "SLA de red",
+                    "displayName": "Calidad de red",
                     "format": PERCENT,
                 },
                 "color": {"fieldName": "technology", "scale": {"type": "categorical"}, "displayName": "Tecnología"},
             },
             "mark": {"layout": "group"},
-            "frame": _frame("SLA de red por provincia"),
+            "frame": _frame("Cumplimiento de calidad de red por provincia"),
         },
     }
 
@@ -364,7 +364,7 @@ FROM gold_incident_impact""",
 GENIE_CODE_PROMPT = """Soy analista de un operador móvil ecuatoriano ficticio, Equinoccio Móvil (datos sintéticos de agosto de 2026) y necesito un dashboard ejecutivo llamado "{title}" para la reunión semanal de operaciones. Usa el SQL Warehouse {warehouse_id}.
 
 Quiero responder tres preguntas:
-1. ¿Cómo está la calidad de la red y en qué provincias, regiones naturales y tecnologías estamos incumpliendo el SLA?
+1. ¿Cómo está la calidad de la red y en qué provincias, regiones naturales y tecnologías estamos por debajo del umbral de calidad de red?
 2. ¿Qué productos y segmentos de clientes generan más ingreso y cómo es su experiencia (NPS, tickets)?
 3. ¿Qué sitios e incidentes debería atender primero el equipo de operaciones y cuánto ingreso está en riesgo?
 

@@ -27,7 +27,7 @@ instrucciones de texto solo describen el comportamiento esencial.
 | Superficie | Contenido |
 |---|---|
 | Descripción de cada fuente | Para qué sirve y su granularidad; Metric Views para KPIs, Gold para detalle |
-| Sinónimos por columna | Términos de negocio: SLA, velocidad, provincia, churn, reclamos, FCR, líneas |
+| Sinónimos por columna | Términos de negocio: calidad de red (también "SLA"), velocidad, provincia, churn, reclamos, FCR, líneas |
 | Medidas | Definidas una sola vez en las Metric Views (módulo 06) |
 | SQL de ejemplo | Cuatro patrones: KPIs de red, KPIs de clientes, incidentes y sitios |
 | Benchmarks | Las dos preguntas de Chat, con SQL verificado |
@@ -38,15 +38,15 @@ insertan en `DISAMBIGUATION`, antes del bloque de resúmenes, que debe ir al fin
 
 ## Dos preguntas para modo Chat
 
-1. Compara disponibilidad, latencia, throughput y cumplimiento del SLA por provincia
+1. Compara disponibilidad, latencia, throughput y cumplimiento de calidad de red por provincia
    y tecnología durante los siete días de telemetría. Muéstrame las tres
    combinaciones con peor desempeño.
 2. ¿Qué cinco productos tienen mayor ARPU y cómo se comparan en consumo de datos,
-   tickets por cada 100 líneas activas, NPS y cumplimiento del SLA de red?
+   tickets por cada 100 líneas activas, NPS y cumplimiento de calidad de red?
 
 ## Dos preguntas para modo Deep Research
 
-1. Investiga las provincias cuyo cumplimiento del SLA de red esté por debajo de
+1. Investiga las provincias cuyo cumplimiento de calidad de red esté por debajo de
    95%. Cruza calidad de celdas, alarmas, órdenes de mantenimiento, tickets,
    líneas afectadas, consumo y NPS. Identifica patrones y causas probables,
    cuantifica el impacto por segmento y producto, diferencia correlación de
