@@ -121,6 +121,13 @@ de cada dataset** antes de aceptarlo.
 Las coordenadas (`latitude`, `longitude`) están en `network_sites_silver`. Únala por
 `site_id` con `gold_site_daily_360`.
 </details>
+<details><summary>Pista 3 (mapa)</summary>
+
+La latitud y la longitud no se escriben: son columnas del dataset. Cree un dataset con
+una fila por sitio, elija la visualización **Point map** y asigne `latitude` y
+`longitude` a los campos del mismo nombre. Para el color, calcule en la consulta una
+banda de SLA con `CASE WHEN`: `site_health_status` sale `Crítico` en todos los sitios.
+</details>
 
 ## Reto 6 — Cazar y corregir una respuesta (Genie)
 
