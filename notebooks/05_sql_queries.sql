@@ -73,9 +73,12 @@ SELECT
   coalesce(a.service_impact_alarms, 0) AS service_impact_alarms,
   coalesce(a.affected_users_est, 0) AS affected_users_est,
   coalesce(i.impacted_subscriptions_day, 0) AS impacted_subscriptions_day,
+  -- Umbrales calibrados a los datos sintéticos: Crítico si falla la mayoría de las
+  -- mediciones con latencia o disponibilidad degradadas; Atención si falla alguna.
   CASE
-    WHEN m.network_sla_compliance_pct < 85 OR m.avg_availability_pct < 97 THEN 'Crítico'
-    WHEN m.network_sla_compliance_pct < 95 OR m.avg_latency_ms > 80 THEN 'Atención'
+    WHEN m.network_sla_compliance_pct < 50
+         AND (m.avg_latency_ms > 100 OR m.avg_availability_pct < 99) THEN 'Crítico'
+    WHEN m.network_sla_compliance_pct < 100 THEN 'Atención'
     ELSE 'Saludable'
   END AS health_status
 FROM metrics m
@@ -146,9 +149,12 @@ SELECT
   coalesce(m.p1_orders, 0) AS p1_orders,
   coalesce(m.downtime_minutes, 0) AS downtime_minutes,
   coalesce(m.maintenance_cost_usd, 0) AS maintenance_cost_usd,
+  -- Umbrales calibrados a los datos sintéticos (SLA diario entre ~40 % y ~75 %).
   CASE
-    WHEN n.network_sla_compliance_pct < 85 OR coalesce(t.critical_tickets, 0) > 0 THEN 'Crítico'
-    WHEN n.network_sla_compliance_pct < 95 OR coalesce(t.open_tickets, 0) > 2 THEN 'Atención'
+    WHEN n.network_sla_compliance_pct < 55 THEN 'Crítico'
+    WHEN n.network_sla_compliance_pct < 65
+         OR coalesce(t.critical_tickets, 0) > 0
+         OR coalesce(t.open_tickets, 0) > 2 THEN 'Atención'
     ELSE 'Saludable'
   END AS site_health_status
 FROM network n
