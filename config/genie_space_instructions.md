@@ -18,40 +18,23 @@ Fuentes Gold de detalle:
 El script de creación sustituye dinámicamente `<catalog>` y `<schema>`. Este
 archivo no debe contener nombres de workspace, warehouse, usuario ni credenciales.
 
-## Instrucciones generales
+## Cómo está curado el espacio
 
-Analiza la operación de Equinoccio Móvil, un operador móvil ecuatoriano ficticio. Responde en español y explica los
-términos técnicos cuando sea necesario.
+La definición vive en `src/telco_workshop/genie.py` y sigue las buenas prácticas de
+Databricks: el significado de los datos va en superficies estructuradas y las
+instrucciones de texto solo describen el comportamiento esencial.
 
-- Usa las Metric Views para todos los KPIs certificados. Usa las Gold solo para
-  detalle, diagnóstico o trazabilidad.
-- En SQL sobre Metric Views, envuelve las medidas con `MEASURE()`.
-- Interpreta ingresos, ARPU, recargas y costos en dólares estadounidenses (USD), la moneda oficial de Ecuador.
-- El período sintético es agosto de 2026. No interpretes “últimos días” respecto
-  de la fecha actual.
-- Muestra filtros, período, dimensiones y medidas utilizados. Permite inspeccionar
-  el SQL generado.
-- Distingue correlación de causalidad. Declara supuestos, limitaciones y datos
-  faltantes.
-- Los IDs `CLI-*`, `LIN-*` y `SUB-*` son ficticios. No intentes inferir nombres,
-  cédulas, teléfonos, direcciones, correos, IMSI ni IMEI.
-- No menciones ninguna empresa real ni presentes resultados sintéticos como datos
-  de producción.
-
-## Sinónimos
-
-| Término de negocio | Definición certificada |
+| Superficie | Contenido |
 |---|---|
-| disponibilidad | `Disponibilidad media` |
-| velocidad, bajada, throughput | `Downlink medio` |
-| SLA de red | `Cumplimiento SLA de red` |
-| SLA por cliente o producto | `Cumplimiento SLA de cliente` |
-| ingreso, facturación | `Ingreso facturado` |
-| recargas | `Ingreso por recargas` |
-| líneas | `Suscripciones activas` |
-| reclamos | `Tickets` |
-| FCR | `Resolución en primer contacto` |
-| riesgo, churn, baja | campo `Riesgo de baja` y medida `Clientes de alto riesgo` |
+| Descripción de cada fuente | Para qué sirve y su granularidad; Metric Views para KPIs, Gold para detalle |
+| Sinónimos por columna | Términos de negocio: SLA, velocidad, provincia, churn, reclamos, FCR, líneas |
+| Medidas | Definidas una sola vez en las Metric Views (módulo 06) |
+| SQL de ejemplo | Cuatro patrones: KPIs de red, KPIs de clientes, incidentes y sitios |
+| Benchmarks | Las dos preguntas de Chat, con SQL verificado |
+| Instrucciones de texto | `PURPOSE`, `DISAMBIGUATION`, `DATA QUALITY NOTES`, `CONSTRAINTS` e `Instructions you must follow when providing summaries` (menos de 2.000 caracteres) |
+
+Las reglas que agrega el participante en la sección 4 de `notebooks/08_genie` se
+insertan en `DISAMBIGUATION`, antes del bloque de resúmenes, que debe ir al final.
 
 ## Dos preguntas para modo Chat
 

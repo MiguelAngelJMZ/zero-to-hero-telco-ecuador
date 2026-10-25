@@ -158,8 +158,9 @@ banda con `CASE WHEN` sobre el SLA promedio del sitio (por ejemplo, < 55 %, 55�
 2. Pulse **Show code**. ¿Filtró por `Región natural = 'Costa'` o por otra cosa?
 3. Pregunte: *¿Cuánto ingreso está en riesgo en Pichincha por incidentes críticos?*
 4. Si alguna respuesta usa una columna equivocada o no entiende un término, agregue
-   una instrucción o sinónimo en la sección 4 de `08_genie`, vuelva a ejecutarla y
-   repita la pregunta.
+   una regla a la lista `instrucciones_extra` de la sección 4 de `08_genie`, vuelva a
+   ejecutar esa celda y repita la pregunta. Una regla por idea, y concreta: nombre el
+   término que confundió a Genie y lo que significa.
 
 **Regla de oro:** una respuesta fluida no es una respuesta correcta. Verifique el SQL.
 
