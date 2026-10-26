@@ -9,7 +9,7 @@ Las pistas están ordenadas de menos a más explícitas. Lea una a la vez.
 
 | # | Módulo | Reto | Tiempo |
 |---:|---|---|---:|
-| 5 | AI/BI Dashboard | Página "Ecuador por regiones" (pasos 1 y 3) | 10 min |
+| 5 | AI/BI Dashboard | Mapa de sitios de Ecuador | 12 min |
 | 6 | Genie | Cazar y corregir una respuesta | 7 min |
 
 ## Para después del taller
@@ -24,7 +24,6 @@ léalo y luego resuelva el reto.
 | 2 | Lakeflow SDP | `03_pipeline` | Endurecer una expectation |
 | 3 | DQX | `04_dqx_quality` | De advertencia a error |
 | 4 | Metric Views | `06_metric_views` | Una medida nueva |
-| 5 | AI/BI Dashboard | `07_dashboard` | Paso 2: mapa de sitios |
 | 7 | Databricks App | `09_app` | Filtro de región natural |
 | 8 | Caso de negocio | — | ¿Dónde invertir este trimestre? |
 
@@ -107,49 +106,55 @@ Las medidas se consultan con `MEASURE()`:
 ``SELECT `Región natural`, MEASURE(`Horas críticas`) FROM mv_network_quality GROUP BY ALL``.
 </details>
 
-## Reto 5 — Página "Ecuador por regiones" (AI/BI Dashboard)
+## Reto 5 — Mapa de sitios de Ecuador (AI/BI Dashboard)
 
-Duplique el dashboard de referencia (o use el suyo) y agregue una **página nueva** con:
+En su dashboard (o en una copia del dashboard de referencia), agregue un **mapa** con un
+punto por cada sitio de red, coloreado según su nivel de calidad de red.
 
-1. Un **KPI** con el `Cumplimiento de calidad de red` global y una **barra** con el
-   `Cumplimiento de calidad de red` por **Región natural** (Costa, Sierra, Amazonía, Insular).
-2. *(Después del taller)* Un **mapa de sitios** con un punto por sitio, coloreado por
-   nivel de calidad de red.
-3. Un **filtro de Región natural** que actualice todos los widgets de la página.
-
-Durante el taller haga los pasos 1 y 3; el mapa queda para después.
+1. Cree un dataset con **una fila por sitio** que incluya su provincia, cantón,
+   latitud, longitud y su `Cumplimiento de calidad de red` promedio.
+2. Agregue una visualización de tipo **Point map** con ese dataset.
+3. Coloree los puntos por nivel de calidad: **baja** (< 55 %), **media** (55–65 %) y
+   **alta** (> 65 %).
 
 Puede construirlo a mano o pedírselo a Genie Code. Si usa Genie Code, **revise el SQL
-de cada dataset** antes de aceptarlo.
+del dataset** antes de aceptarlo.
 
-**Pregunte:** ¿qué región natural tiene la peor calidad de red? Y, cuando haga el mapa, ¿qué
+**Pregunte:** ¿en qué ciudades se concentran los sitios de calidad baja? ¿Qué
 conversación abre Galápagos sobre conectividad insular?
 
-<details><summary>Pista 1 (barra y KPI)</summary>
+<details><summary>Pista 1 (los datos)</summary>
 
-`Región natural` es una dimensión de `mv_network_quality`. En la pestaña **Data**, cree
-un dataset con SQL que agrupe por esa dimensión y use
-``MEASURE(`Cumplimiento de calidad de red`)``. En la barra, ponga la región natural en el eje X
-y la calidad de red en el eje Y.
+Las coordenadas (`latitude`, `longitude`) están en `network_sites_silver`. La calidad de
+red diaria de cada sitio está en `gold_site_daily_360` (columna
+`network_sla_compliance_pct`). Únalas por `site_id` y agrupe por sitio.
 </details>
-<details><summary>Pista 2 (filtro)</summary>
+<details><summary>Pista 2 (el mapa)</summary>
 
-Agregue un widget de **filtro** a la página, elija el campo de región natural y
-conéctelo a **cada** dataset de la página. Un dataset que no tenga ese campo no se
-filtrará.
+La latitud y la longitud no se escriben: son columnas del dataset. En la visualización
+**Point map**, asigne `latitude` al campo **Latitude** y `longitude` al campo
+**Longitude**. Agregue el sitio, el cantón y la calidad al **Tooltip**.
 </details>
-<details><summary>Pista 3 (mapa)</summary>
+<details><summary>Pista 3 (el color)</summary>
 
-Las coordenadas (`latitude`, `longitude`) están en `network_sites_silver`. Únala por
-`site_id` con `gold_site_daily_360`.
+Calcule el nivel en la consulta con `CASE WHEN` sobre el promedio de
+`network_sla_compliance_pct` y úselo en el campo **Color**. No use `site_health_status`:
+es diario, y un sitio tiene varios estados en el período.
 </details>
-<details><summary>Pista 4 (mapa)</summary>
+<details><summary>Pista 4 (si se atasca)</summary>
 
-La latitud y la longitud no se escriben: son columnas del dataset. Cree un dataset con
-una fila por sitio, elija la visualización **Point map** y asigne `latitude` y
-`longitude` a los campos del mismo nombre. Para el color, calcule en la consulta una
-banda con `CASE WHEN` sobre la calidad de red promedio del sitio (por ejemplo, < 55 %, 55–65 % y
-> 65 %): `site_health_status` es diario y un sitio tiene varios estados en el período.
+Complete los `...` y reemplace `<catálogo>` y `<usuario>` por los suyos:
+
+```sql
+SELECT s.site_id, s.region AS provincia, s.canton, s.latitude, s.longitude,
+       round(avg(g.network_sla_compliance_pct), 1) AS calidad_red_pct,
+       CASE WHEN avg(g.network_sla_compliance_pct) < 55 THEN 'Calidad baja'
+            WHEN ... THEN 'Calidad media'
+            ELSE ... END AS nivel_calidad
+FROM <catálogo>.z2h_<usuario>.gold_site_daily_360 g
+JOIN <catálogo>.z2h_<usuario>.network_sites_silver s USING (site_id)
+GROUP BY ALL
+```
 </details>
 
 ## Reto 6 — Cazar y corregir una respuesta (Genie)
