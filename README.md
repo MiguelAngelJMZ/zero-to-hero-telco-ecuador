@@ -73,6 +73,7 @@ tarifas negativas, sitios inexistentes, duplicados y porcentajes fuera de rango.
 | **Estado de salud del sitio** | Diario: `Crítico` si la calidad de red es < 55 %; `Atención` si es < 65 % o hay tickets críticos o más de 2 abiertos; `Saludable` en el resto. |
 | **Riesgo de baja** | Banda Alto, Medio o Bajo por cliente, que combina la calidad de red experimentada, los tickets de red y el NPS. |
 | **ARPU** | Ingreso facturado del período dividido por clientes únicos. |
+| **NPS** (Net Promoter Score) | Lealtad según la pregunta "del 0 al 10, ¿recomendaría Equinoccio Móvil?": promotores (9–10), pasivos (7–8) y detractores (0–6). NPS = % promotores − % detractores, de −100 a +100. |
 | **Ingreso en riesgo** | Ingreso facturado de las líneas afectadas por un incidente. |
 | **Tiempo objetivo (SLA de atención)** | Horas para resolver tickets (4–72 h según severidad) y órdenes de mantenimiento (2–72 h según prioridad). |
 
